@@ -75,10 +75,16 @@
         .hidden { display: none !important; }
         .emoji-art { font-size: 4.5rem; display: block; margin: 15px 0; animation: bounce 2s infinite; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        
+        /* Pulse for the loader */
+        .pulse { animation: heartPulse 1.5s infinite; }
+        @keyframes heartPulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
 
         .form-wrapper { width: 100%; height: 350px; border-radius: 15px; overflow-y: auto; border: 2px dashed #ffccd5; background: white; margin: 15px 0; }
         iframe { width: 100%; height: 1800px; border: none; }
-        video { width: 100%; border-radius: 15px; }
+        
+        .video-box { background: #000; border-radius: 15px; padding: 5px; margin-top: 10px; overflow: hidden; }
+        video { width: 100%; display: block; border-radius: 10px; }
         
         .fade-in { animation: fadeIn 0.8s ease-in; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -108,23 +114,30 @@
 
         <div id="page-form" class="hidden">
             <h2>For You 💌</h2>
-            <p>Tell me a bit about us...</p>
+            <p>Answer these for me...</p>
             <div class="form-wrapper">
                 <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScrORU5q1gxalUrfQsO8xpvNTKYZVtcqzX0DKYSQXf9lwWmtQ/viewform?embedded=true">Loading…</iframe>
             </div>
             <p style="font-size: 0.8rem;">
-                Form not loading? <a href="https://docs.google.com/forms/d/e/1FAIpQLScrORU5q1gxalUrfQsO8xpvNTKYZVtcqzX0DKYSQXf9lwWmtQ/viewform" target="_blank" style="color:#d63384;">Click here</a>
+                Can't see the form? <a href="https://docs.google.com/forms/d/e/1FAIpQLScrORU5q1gxalUrfQsO8xpvNTKYZVtcqzX0DKYSQXf9lwWmtQ/viewform" target="_blank" style="color:#d63384;">Click here</a>
             </p>
             <button onclick="showFinal()">I've Submitted! 🎬</button>
         </div>
 
         <div id="page-final" class="hidden">
             <h2>Happy Valentine's Day! 💝</h2>
-            <div style="background: #000; border-radius: 15px; padding: 5px;">
-                <video id="mainVideo" controls>
+            
+            <div id="videoLoader">
+                <div class="emoji-art pulse">❤️</div>
+                <p>Loading your surprise...</p>
+            </div>
+
+            <div class="video-box" id="videoWrapper" style="display:none;">
+                <video id="mainVideo" controls preload="auto">
                     <source src="video.mp4" type="video/mp4">
                 </video>
             </div>
+            
             <p style="font-family: 'Sacramento', cursive; font-size: 2.2rem; margin-top: 20px;">I love you forever. 💞</p>
         </div>
     </div>
@@ -142,23 +155,18 @@
         }
         setInterval(createHeart, 400);
 
-        // Fixed Unlock logic
+        // Unlock logic
         function unlock() {
-            const userInput = document.getElementById('passInput').value;
-            const correctPass = "26042023";
-            
-            if (userInput === correctPass) {
+            if (document.getElementById('passInput').value === "26042023") {
                 document.getElementById('page-login').classList.add('hidden');
                 document.getElementById('page-content').classList.remove('hidden');
             } else {
-                document.getElementById('errorMsg').innerText = "Incorrect! Hint: It's our special day 😘";
+                document.getElementById('errorMsg').innerText = "Incorrect! Hint: 26042023 😘";
             }
         }
 
         // Support Enter key
-        document.getElementById('passInput').addEventListener("keypress", function(e) {
-            if (e.key === "Enter") unlock();
-        });
+        document.getElementById('passInput').addEventListener("keypress", (e) => { if (e.key === "Enter") unlock(); });
 
         // Journey navigation
         let currentStep = 0;
@@ -167,8 +175,8 @@
             { title: "Chocolate Day 🍫", emoji: "🍩", text: "You're sweeter than any treat in the world." },
             { title: "Teddy Day 🧸", emoji: "🧸", text: "A hug in the form of a bear until I can hold you for real." },
             { title: "Promise Day 🤞", emoji: "✨", text: "I promise to always be your home, no matter where we are." },
-            { title: "Hug Day 🫂", emoji: "🤗", text: "Imagine my arms around you right now. 1... 2... 3... SQUEEZE!" },
-            { title: "Kiss Day 💋", emoji: "😘", text: "A million virtual kisses flying straight to your cheek!" },
+            { title: "Hug Day 🫂", emoji: "🤗", text: "Imagine my arms around you right now. Squeeze!" },
+            { title: "Kiss Day 💋", emoji: "😘", text: "A million virtual kisses flying straight to you!" },
             { title: "Valentine's Day! 💖", emoji: "💝", text: "The big day is here! But first, a little surprise quiz..." }
         ];
 
@@ -187,7 +195,25 @@
         function showFinal() {
             document.getElementById('page-form').classList.add('hidden');
             document.getElementById('page-final').classList.remove('hidden');
-            document.getElementById('mainVideo').play();
+            
+            const video = document.getElementById('mainVideo');
+            const loader = document.getElementById('videoLoader');
+            const wrapper = document.getElementById('videoWrapper');
+
+            // Logic to handle lag: show video only when ready
+            video.oncanplaythrough = function() {
+                loader.style.display = "none";
+                wrapper.style.display = "block";
+                video.play();
+            };
+
+            // Fallback: if it takes too long to buffer, show it anyway after 4s
+            setTimeout(() => {
+                if (wrapper.style.display === "none") {
+                    loader.style.display = "none";
+                    wrapper.style.display = "block";
+                }
+            }, 4000);
         }
     </script>
 </body>
