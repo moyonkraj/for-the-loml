@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Favorite Person 💖</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Sacramento&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%);
+            font-family: 'Nunito', sans-serif;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        #hearts { position: absolute; width: 100%; height: 100%; overflow: hidden; top: 0; left: 0; z-index: 1; pointer-events: none; }
+        .heart-bg {
+            position: absolute;
+            bottom: -100px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 20px;
+            animation: float 8s linear infinite;
+        }
+        @keyframes float { to { transform: translateY(-110vh) rotate(360deg); opacity: 0; } }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            padding: 2.5rem;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(214, 51, 132, 0.2);
+            width: 85%;
+            max-width: 420px;
+            text-align: center;
+            z-index: 10;
+            border: 2px solid #fff;
+        }
+
+        h1, h2 { font-family: 'Sacramento', cursive; color: #d63384; font-size: 3rem; margin: 0; }
+        p { color: #664d55; font-size: 1.1rem; margin: 10px 0; }
+
+        input {
+            padding: 15px;
+            font-size: 1.2rem;
+            border: 2px dashed #ffccd5;
+            border-radius: 25px;
+            width: 80%;
+            margin: 15px 0;
+            text-align: center;
+            outline: none;
+            color: #d63384;
+            background: #fffafa;
+        }
+
+        button {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Sacramento', cursive;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        button:hover { transform: scale(1.05); }
+
+        .hidden { display: none !important; }
+        .emoji-art { font-size: 4.5rem; display: block; margin: 15px 0; animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+        .form-wrapper { width: 100%; height: 350px; border-radius: 15px; overflow-y: auto; border: 2px dashed #ffccd5; background: white; margin: 15px 0; }
+        iframe { width: 100%; height: 1800px; border: none; }
+        video { width: 100%; border-radius: 15px; }
+        
+        .fade-in { animation: fadeIn 0.8s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div id="hearts"></div>
+
+    <div class="container fade-in">
+        
+        <div id="page-login">
+            <h1>Unlock My Heart 🔐</h1>
+            <p>Enter our anniversary date<br><b>(DDMMYYYY)</b></p>
+            <input type="password" id="passInput" placeholder="••••••••" maxlength="8">
+            <br>
+            <button type="button" onclick="unlock()">Enter ✨</button>
+            <p id="errorMsg" style="color: #ff4d6d; font-weight: bold; margin-top: 10px;"></p>
+        </div>
+
+        <div id="page-content" class="hidden">
+            <h2 id="dayTitle">Rose Day 🌹</h2>
+            <div id="dayEmoji" class="emoji-art">🌹</div>
+            <p id="dayText">A virtual rose for a love that never fades.</p>
+            <button onclick="progress()">Next Day ➜</button>
+        </div>
+
+        <div id="page-form" class="hidden">
+            <h2>For You 💌</h2>
+            <p>Tell me a bit about us...</p>
+            <div class="form-wrapper">
+                <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScrORU5q1gxalUrfQsO8xpvNTKYZVtcqzX0DKYSQXf9lwWmtQ/viewform?embedded=true">Loading…</iframe>
+            </div>
+            <p style="font-size: 0.8rem;">
+                Form not loading? <a href="https://docs.google.com/forms/d/e/1FAIpQLScrORU5q1gxalUrfQsO8xpvNTKYZVtcqzX0DKYSQXf9lwWmtQ/viewform" target="_blank" style="color:#d63384;">Click here</a>
+            </p>
+            <button onclick="showFinal()">I've Submitted! 🎬</button>
+        </div>
+
+        <div id="page-final" class="hidden">
+            <h2>Happy Valentine's Day! 💝</h2>
+            <div style="background: #000; border-radius: 15px; padding: 5px;">
+                <video id="mainVideo" controls>
+                    <source src="video.mp4" type="video/mp4">
+                </video>
+            </div>
+            <p style="font-family: 'Sacramento', cursive; font-size: 2.2rem; margin-top: 20px;">I love you forever. 💞</p>
+        </div>
+    </div>
+
+    <script>
+        // Hearts animation
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart-bg';
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (Math.random() * 3 + 5) + 's';
+            document.getElementById('hearts').appendChild(heart);
+            setTimeout(() => heart.remove(), 8000);
+        }
+        setInterval(createHeart, 400);
+
+        // Fixed Unlock logic
+        function unlock() {
+            const userInput = document.getElementById('passInput').value;
+            const correctPass = "26042023";
+            
+            if (userInput === correctPass) {
+                document.getElementById('page-login').classList.add('hidden');
+                document.getElementById('page-content').classList.remove('hidden');
+            } else {
+                document.getElementById('errorMsg').innerText = "Incorrect! Hint: It's our special day 😘";
+            }
+        }
+
+        // Support Enter key
+        document.getElementById('passInput').addEventListener("keypress", function(e) {
+            if (e.key === "Enter") unlock();
+        });
+
+        // Journey navigation
+        let currentStep = 0;
+        const days = [
+            { title: "Propose Day 💍", emoji: "💍", text: "Even across the miles, I choose you every single day." },
+            { title: "Chocolate Day 🍫", emoji: "🍩", text: "You're sweeter than any treat in the world." },
+            { title: "Teddy Day 🧸", emoji: "🧸", text: "A hug in the form of a bear until I can hold you for real." },
+            { title: "Promise Day 🤞", emoji: "✨", text: "I promise to always be your home, no matter where we are." },
+            { title: "Hug Day 🫂", emoji: "🤗", text: "Imagine my arms around you right now. 1... 2... 3... SQUEEZE!" },
+            { title: "Kiss Day 💋", emoji: "😘", text: "A million virtual kisses flying straight to your cheek!" },
+            { title: "Valentine's Day! 💖", emoji: "💝", text: "The big day is here! But first, a little surprise quiz..." }
+        ];
+
+        function progress() {
+            if (currentStep < days.length) {
+                document.getElementById('dayTitle').innerText = days[currentStep].title;
+                document.getElementById('dayEmoji').innerText = days[currentStep].emoji;
+                document.getElementById('dayText').innerText = days[currentStep].text;
+                currentStep++;
+            } else {
+                document.getElementById('page-content').classList.add('hidden');
+                document.getElementById('page-form').classList.remove('hidden');
+            }
+        }
+
+        function showFinal() {
+            document.getElementById('page-form').classList.add('hidden');
+            document.getElementById('page-final').classList.remove('hidden');
+            document.getElementById('mainVideo').play();
+        }
+    </script>
+</body>
+</html>
